@@ -1,57 +1,32 @@
-const { BufferJSON, WA_DEFAULT_EPHEMERAL, generateWAMessageFromContent, proto, generateWAMessageContent, generateWAMessage, getBinaryNodeChild, getBinaryNodeChildren, prepareWAMessageMedia, areJidsSameUser, getContentType } = require("@whiskeysockets/baileys");
+// Copy paste 🤏🏼😁😁
+const { BufferJSON, WA_DEFAULT_EPHEMERAL, generateWAMessageFromContent, proto, generateWAMessageContent, generateWAMessage, prepareWAMessageMedia, areJidsSameUser, getContentType } = require("@whiskeysockets/baileys");
 const fs = require("fs");
 const path = require('path');
 const util = require("util");
 const mumaker = require("mumaker");
-const crypto = require('crypto');
-const translatte = require('translatte');
 global.axios = require('axios').default
 const chalk = require("chalk");
+const uploadToCatbox = require('./lib/catbox.js');
 const speed = require("performance-now");
 const Genius = require("genius-lyrics");
 const yts = require("yt-search");
 let lastTextTime = 0;
 const messageDelay = 3000;
-const ffmpeg = require("fluent-ffmpeg");
-const fetch = require("node-fetch");
 const { DateTime } = require('luxon');
-const BASE_URL = 'https://noobs-api.top';
-const uploadtoimgur = require('../lib/imgur');
-const uploadToCatbox = require('../lib/catbox');
+const uploadtoimgur = require('./lib/imgur');
 const advice = require("badadvice");
+const BASE_URL = 'https://noobs-api.top';
 const {c, cpp, node, python, java} = require('compile-run');
 const acrcloud = require("acrcloud"); 
 const ytdl = require("ytdl-core");
 const Client = new Genius.Client("TUoAEhL79JJyU-MpOsBDkFhJFWFH28nv6dgVgPA-9R1YRwLNP_zicdX2omG2qKE8gYLJat5F5VSBNLfdnlpfJg"); // Scrapes if no key is provided
-const { downloadYouTube, downloadSoundCloud, downloadSpotify, searchYouTube, searchSoundCloud, searchSpotify } = require('../action/wee');
-const { getSettings, updateSetting } = require('../database/config');
-const fetchSettings = require('../database/fetchSettings');
-const { TelegraPh, UploadFileUgu, webp2mp4File, floNime } = require('../lib/ravenupload');
+const { TelegraPh, UploadFileUgu, webp2mp4File, floNime } = require('./lib/ravenupload');
 const { Configuration, OpenAI } = require("openai");
-const { appname, herokuapi, botname, author, packname, mycode, admin, botAdmin, dev, group, bad, owner, NotOwner } = require("../set.js");
-
-const { smsg, runtime, fetchUrl, isUrl, processTime, formatp, tanggal, formatDate, getTime,  sleep, generateProfilePicture, clockString, fetchJson, getBuffer, jsonformat, format, parseMention, getRandom } = require('../lib/ravenfunc');
+const { menu, autoread, mode, antidel, antitag, appname, herokuapi, gptdm, botname, antibot, prefix, author, packname, mycode, admin, botAdmin, dev, group, bad, DevRaven, NotOwner, antilink, antilinkall, wapresence, badwordkick } = require("./set.js");
+const { smsg, runtime, fetchUrl, isUrl, processTime, formatp, tanggal, formatDate, getTime,  sleep, generateProfilePicture, clockString, fetchJson, getBuffer, jsonformat, format, parseMention, getRandom } = require('./lib/ravenfunc');
 const { exec, spawn, execSync } = require("child_process");
 module.exports = raven = async (client, m, chatUpdate, store) => {
   try {
-
-const {
-  wapresence,
-  autoread,
-  mode,
-  prefix,
-  antilink,
-  antilinkall,
-  antidelete,
-  gptdm,
-  menutype,
-  badword,
-  antibot,
-  antitag	
-} = await fetchSettings(); 
-	  
-console.log(prefix);
-	  
     var body =
       m.mtype === "conversation"
         ? m.message.conversation
@@ -67,7 +42,7 @@ console.log(prefix);
         ? m.message.buttonsResponseMessage?.selectedButtonId || m.message.listResponseMessage?.singleSelectReply.selectedRowId || m.text
         : "";
     var budy = typeof m.text == "string" ? m.text : "";
-    var msgR = m.message.extendedTextMessage?.contextInfo?.quotedMessage;  
+	  var msgR = m.message.extendedTextMessage?.contextInfo?.quotedMessage; 
 //========================================================================================================================//
 //========================================================================================================================//	  
     const Heroku = require("heroku-client");  
@@ -370,7 +345,7 @@ return (ramm)
 }  
 //========================================================================================================================//   
 const totalcmds = () => {
-   var mytext = fs.readFileSync("./action/raven.js").toString();
+   var mytext = fs.readFileSync("raven.js").toString();
     var numUpper = (mytext.match(/case ['"]/g) || []).length;
     return numUpper;
 }	  
