@@ -7,6 +7,7 @@ const {
   downloadContentFromMessage,
   jidDecode,
   proto,
+  Browsers,
   getContentType,
 } = require("@whiskeysockets/baileys");
 
