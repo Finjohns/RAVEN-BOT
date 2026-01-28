@@ -26,10 +26,10 @@ const _ = require("lodash");
 let lastTextTime = 0;
 const messageDelay = 3000;
 const currentTime = Date.now();
-const Events = require('../action/events');
-const authenticationn = require('../action/auth');
-const { initializeDatabase } = require('../database/config');
-const fetchSettings = require('../database/fetchSettings');
+const Events = require('./action/events');
+const authenticationn = require('./action/auth');
+// const { initializeDatabase } = require('../database/config');
+// const fetchSettings = require('../database/fetchSettings');
 const PhoneNumber = require("awesome-phonenumber");
 const { imageToWebp, videoToWebp, writeExifImg, writeExifVid } = require('../lib/ravenexif');
 const { smsg, isUrl, generateMessageTag, getBuffer, getSizeMedia, fetchJson, await, sleep } = require('../lib/ravenfunc');
@@ -47,11 +47,11 @@ async function startRaven() {
 let autobio, autolike, autoview, mode, prefix, anticall;
 
 try {
-  const settings = await fetchSettings();
-  console.log("😴 settings object:", settings);
+  // const settings = await fetchSettings();
+  // console.log("😴 settings object:", settings);
 
   
-  ({ autobio, autolike, autoview, mode, prefix, anticall } = settings);
+  // ({ autobio, autolike, autoview, mode, prefix, anticall } = settings);
 
   console.log("✅ Settings loaded successfully.... indexfile");
 } catch (error) {
@@ -152,31 +152,44 @@ if (!client.public && !mek.key.fromMe && chatUpdate.type === "notify") return;
     }
   });
   
-client.ev.on("group-participants.update", async (m) => {
-    Events(client, m);
-  });
-  
- client.ev.on('call', async (callData) => {
-  const { anticall: dbAnticall } = await fetchSettings();
-
-  if (dbAnticall === 'on') {
-    const callId = callData[0]?.id;
-    const callerId = callData[0]?.from;
-
-    if (callId && callerId) {
-      await client.rejectCall(callId, callerId);
-      const currentTime = Date.now();
-      if (currentTime - lastTextTime >= messageDelay) {
-        await client.sendMessage(callerId, {
-          text: "🚫 Anticall is active. Only text messages are allowed."
-        });
-        lastTextTime = currentTime;
+client.ev.on("group-participants.update", async (update) => {
+    if (antiforeign === 'TRUE' && update.action === "add") {
+      for (let participant of update.participants) {
+        const jid = client.decodeJid(participant);
+        const phoneNumber = jid.split("@")[0];
+        
+        if (!phoneNumber.startsWith(mycode)) {
+          await client.sendMessage(update.id, {
+            text: "Your Country code is not allowed to join this group !",
+            mentions: [jid]
+          });
+          
+          await client.groupParticipantsUpdate(update.id, [jid], "remove");
+          console.log(`Removed ${jid} from group ${update.id} because they are not from ${mycode}`);
+        }
       }
     }
-  } else {
-    console.log("✅ Anticall is OFF. Call ignored.");
-  }
-});
+    Events(client, update);
+  });
+
+ client.ev.on('call', async (callData) => {
+    if (anticall === 'TRUE') {
+      const callId = callData[0].id;
+      const callerId = callData[0].from;
+
+      await client.rejectCall(callId, callerId);
+      const currentTime = Date.now();
+      
+      if (currentTime - lastTextTime >= messageDelay) {
+        await client.sendMessage(callerId, {
+          text: "Anticall is active, Only texts are allowed"
+        });
+        lastTextTime = currentTime;
+      } else {
+        console.log('Message skipped to prevent overflow');
+      }
+    }
+  });
 
         
   client.getName = (jid, withoutContact = false) => {
